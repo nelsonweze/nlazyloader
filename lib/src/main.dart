@@ -7,13 +7,13 @@ import 'dart:async';
 enum LoadingStatus { LOADING, STABLE, RETRIEVING }
 
 class NLazyLoader<T> extends StatelessWidget {
-  final Widget Function(LazyItemBuilder<T>, int) builder;
-  final Widget child;
+  final Widget Function(LazyItemBuilder<T>, int)? builder;
+  final Widget? child;
   final bool reverse;
-  final FutureCallBack onLoadMore;
+  final FutureCallBack? onLoadMore;
   final double scrollOffset;
-  final List<T> items;
-  final LazyItemBuilder<T> itemBuilder;
+  final List<T>? items;
+  final LazyItemBuilder<T>? itemBuilder;
   final bool isSliver;
   final bool isLoading;
   NLazyLoader(
@@ -33,17 +33,17 @@ class NLazyLoader<T> extends StatelessWidget {
 
     int itemCount = items != null
         ? status == LoadingStatus.LOADING || status == LoadingStatus.RETRIEVING
-            ? items.length + 1
-            : items.length
+            ? items!.length + 1
+            : items!.length
         : 0;
 
-    LazyItemBuilder<T> _builder = (index, item) {
-      return index >= items?.length
+    LazyItemBuilder<T?> _builder = (index, item) {
+      return index >= items!.length
           ? BottomLoader()
           : Column(
               children: [
-                itemBuilder(index, items[index]),
-                if (reverse && index == 0 || index == items.length - 1)
+                itemBuilder!(index, items![index]),
+                if (reverse && index == 0 || index == items!.length - 1)
                   SizedBox(
                     height: 50,
                   )
@@ -51,8 +51,8 @@ class NLazyLoader<T> extends StatelessWidget {
             );
     };
 
-    Widget body() {
-      Widget _child;
+    Widget? body() {
+      Widget? _child;
       if (child != null)
         _child = child;
       else if (isSliver)
@@ -63,7 +63,7 @@ class NLazyLoader<T> extends StatelessWidget {
               childCount: itemCount),
         );
       else if (builder != null)
-        _child = builder(_builder, itemCount);
+        _child = builder!(_builder, itemCount);
       else
         _child = ListView.builder(
           physics: ClampingScrollPhysics(),
@@ -77,7 +77,7 @@ class NLazyLoader<T> extends StatelessWidget {
 
     return NotificationListener(
       onNotification: (ScrollUpdateNotification info) {
-        if (!reverse && info.scrollDelta > 0) {
+        if (!reverse && info.scrollDelta! > 0) {
           if (info.metrics.maxScrollExtent > info.metrics.pixels &&
               info.metrics.maxScrollExtent - info.metrics.pixels <=
                   scrollOffset) {
@@ -85,7 +85,7 @@ class NLazyLoader<T> extends StatelessWidget {
               status = LoadingStatus.LOADING;
               print('read more');
               if (onLoadMore != null)
-                onLoadMore().then((value) {
+                onLoadMore!().then((value) {
                   status = value ? LoadingStatus.LOADING : LoadingStatus.STABLE;
                 });
             }
@@ -94,7 +94,7 @@ class NLazyLoader<T> extends StatelessWidget {
         }
         return false;
       },
-      child: body(),
+      child: body()!,
     );
   }
 }
@@ -119,7 +119,7 @@ class BottomLoader extends StatelessWidget {
           child: !Platform.isIOS
               ? CircularProgressIndicator(
                   strokeWidth: 2.0,
-                  valueColor: new AlwaysStoppedAnimation<Color>(null),
+                  valueColor: new AlwaysStoppedAnimation<Color?>(null),
                 )
               : CupertinoActivityIndicator(),
         ),
