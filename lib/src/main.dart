@@ -1,7 +1,7 @@
-import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/foundation.dart';
 import 'dart:async';
 
 enum LoadingStatus { LOADING, STABLE, RETRIEVING }
@@ -116,7 +116,7 @@ class BottomLoader extends StatelessWidget {
         child: SizedBox(
           width: 30,
           height: 30,
-          child: !Platform.isIOS
+          child: Theme.of(context).platform != TargetPlatform.iOS
               ? CircularProgressIndicator(
                   strokeWidth: 2.0,
                   valueColor: new AlwaysStoppedAnimation<Color?>(null),
