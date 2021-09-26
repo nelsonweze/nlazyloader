@@ -1,1 +1,1 @@
-export 'src/main.dart';
+export 'src/widgets/widgets.dart';
