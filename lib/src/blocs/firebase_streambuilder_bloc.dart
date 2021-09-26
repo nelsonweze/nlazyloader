@@ -45,7 +45,6 @@ class FBStreamBuilderCubit extends Cubit<FBStreamBuilderState> {
     documentChanges.forEach((docChange) {
       if (documents.isEmpty && docChange.type == DocumentChangeType.added) {
         isChange = true;
-        print(docChange.type);
         documents.add(docChange.doc);
       }
       if (docChange.type == DocumentChangeType.removed) {
@@ -74,7 +73,9 @@ class FBStreamBuilderCubit extends Cubit<FBStreamBuilderState> {
   }
 
   Future<bool> requestNextPage(int count) async {
-    if (state.loadingStatus == LoadingStatus.STABLE) {
+    print('loadmore');
+    if (state.loadingStatus == LoadingStatus.STABLE &&
+        state.documents.length > count) {
       QuerySnapshot<Map<String, dynamic>> querySnapshot;
       emit(state.copyWith(loadingStatus: LoadingStatus.RETRIEVING));
       var documents = state.documents;
