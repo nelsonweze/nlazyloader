@@ -32,7 +32,7 @@ class NLazyLoader<T> extends StatelessWidget {
         : 0;
 
     LazyItemBuilder<T?> _builder = (index, item) {
-      return index > items!.length
+      return index >= items!.length
           ? BottomLoader()
           : Column(
               children: [

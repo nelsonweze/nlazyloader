@@ -8,22 +8,26 @@ class FBStreamBuilderState {
   LoadingStatus loadingStatus;
   DocumentSnapshot? lastDocumentSnap;
   Query<Map<String, dynamic>>? query;
+  bool hasReachedMax;
   FBStreamBuilderState(
       {this.documents = const [],
       this.loadingStatus = LoadingStatus.STABLE,
       this.lastDocumentSnap,
+      this.hasReachedMax = false,
       this.query});
 
   FBStreamBuilderState copyWith(
       {List<DocumentSnapshot<Map<String, dynamic>>>? documents,
       LoadingStatus? loadingStatus,
       DocumentSnapshot? lastDocumentSnap,
-      Query<Map<String, dynamic>>? query}) {
+      Query<Map<String, dynamic>>? query,
+      bool? hasReachedMax}) {
     return FBStreamBuilderState(
         documents: documents ?? this.documents,
         lastDocumentSnap: lastDocumentSnap ?? this.lastDocumentSnap,
         loadingStatus: loadingStatus ?? this.loadingStatus,
-        query: query ?? this.query);
+        query: query ?? this.query,
+        hasReachedMax: hasReachedMax ?? this.hasReachedMax);
   }
 }
 
@@ -43,9 +47,10 @@ class FBStreamBuilderCubit extends Cubit<FBStreamBuilderState> {
     var isChange = false;
     var documents = state.documents.toList();
     documentChanges.forEach((docChange) {
-      if (documents.isEmpty && docChange.type == DocumentChangeType.added) {
+      if (docChange.type == DocumentChangeType.added) {
         isChange = true;
         documents.add(docChange.doc);
+        emit(state.copyWith(hasReachedMax: false));
       }
       if (docChange.type == DocumentChangeType.removed) {
         documents.removeWhere((doc) {
@@ -73,9 +78,8 @@ class FBStreamBuilderCubit extends Cubit<FBStreamBuilderState> {
   }
 
   Future<bool> requestNextPage(int count) async {
-    print('loadmore');
-    if (state.loadingStatus == LoadingStatus.STABLE &&
-        state.documents.length > count) {
+    if (state.loadingStatus == LoadingStatus.STABLE && !state.hasReachedMax) {
+      print('loadmore');
       QuerySnapshot<Map<String, dynamic>> querySnapshot;
       emit(state.copyWith(loadingStatus: LoadingStatus.RETRIEVING));
       var documents = state.documents;
@@ -94,7 +98,8 @@ class FBStreamBuilderCubit extends Cubit<FBStreamBuilderState> {
         int newSize = documents.length;
         if (oldSize != newSize) {
           emit(state.copyWith(documents: documents));
-        }
+        } else
+          emit(state.copyWith(hasReachedMax: true));
       }
     }
     emit(state.copyWith(loadingStatus: LoadingStatus.STABLE));

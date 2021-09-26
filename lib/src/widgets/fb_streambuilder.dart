@@ -14,6 +14,7 @@ class FBStreamBuilder<T> extends StatefulWidget {
   final Widget Function(int, T) itemBuilder;
   final Widget? empty;
   final Widget Function(Widget Function(int, T), int)? builder;
+  final FBStreamBuilderCubit? cubit;
   const FBStreamBuilder(
       {Key? key,
       required this.query,
@@ -21,6 +22,7 @@ class FBStreamBuilder<T> extends StatefulWidget {
       this.isSliver = false,
       this.builder,
       this.empty,
+      this.cubit,
       required this.itemBuilder,
       this.limit = 10})
       : super(key: key);
@@ -30,11 +32,12 @@ class FBStreamBuilder<T> extends StatefulWidget {
 }
 
 class _FBStreamBuilderState<T> extends State<FBStreamBuilder<T>> {
-  var cubit = FBStreamBuilderCubit();
+  late FBStreamBuilderCubit cubit;
 
   @override
   void initState() {
-    cubit.init(widget.query);
+    cubit = widget.cubit ?? FBStreamBuilderCubit()
+      ..init(widget.query);
     super.initState();
   }
 
