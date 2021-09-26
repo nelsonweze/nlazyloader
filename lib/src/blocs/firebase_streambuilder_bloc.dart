@@ -92,12 +92,15 @@ class FBStreamBuilderCubit extends Cubit<FBStreamBuilderState> {
           }
           querySnapshot = await snap.limit(count).get();
         }
-
-        int oldSize = documents.length;
-        documents.addAll(querySnapshot.docs);
-        int newSize = documents.length;
-        if (oldSize != newSize) {
-          emit(state.copyWith(documents: documents));
+        if (querySnapshot.docs.isNotEmpty) {
+          documents.addAll(querySnapshot.docs);
+          var map = Map<String, DocumentSnapshot<Map<String, dynamic>>>();
+          documents.forEach((element) {
+            map[element.id] = element;
+          });
+          emit(state.copyWith(
+              documents: map.values.toList(),
+              lastDocumentSnap: map.values.last));
         } else
           emit(state.copyWith(hasReachedMax: true));
       }
