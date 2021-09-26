@@ -12,7 +12,7 @@ class NLazyLoader<T> extends StatelessWidget {
   final List<T>? items;
   final LazyItemBuilder<T>? itemBuilder;
   final bool isSliver;
-  LoadingStatus status;
+  final LoadingStatus status;
   NLazyLoader(
       {this.child,
       this.builder,
@@ -32,7 +32,7 @@ class NLazyLoader<T> extends StatelessWidget {
         : 0;
 
     LazyItemBuilder<T?> _builder = (index, item) {
-      return index >= items!.length
+      return index > items!.length
           ? BottomLoader()
           : Column(
               children: [
@@ -76,11 +76,7 @@ class NLazyLoader<T> extends StatelessWidget {
               info.metrics.maxScrollExtent - info.metrics.pixels <=
                   scrollOffset) {
             if (status == LoadingStatus.STABLE) {
-              status = LoadingStatus.LOADING;
-              if (onLoadMore != null)
-                onLoadMore!().then((value) {
-                  status = value ? LoadingStatus.LOADING : LoadingStatus.STABLE;
-                });
+              onLoadMore?.call();
             }
           }
           return true;
