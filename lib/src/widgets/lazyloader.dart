@@ -12,24 +12,21 @@ class NLazyLoader<T> extends StatelessWidget {
   final List<T>? items;
   final LazyItemBuilder<T>? itemBuilder;
   final bool isSliver;
-  final bool isLoading;
+  LoadingStatus status;
   NLazyLoader(
       {this.child,
       this.builder,
       this.reverse = false,
       this.isSliver = false,
-      this.isLoading = false,
+      this.status = LoadingStatus.STABLE,
       this.onLoadMore,
       this.scrollOffset = 80,
       this.itemBuilder,
       this.items});
 
   Widget build(BuildContext context) {
-    LoadingStatus status =
-        isLoading ? LoadingStatus.LOADING : LoadingStatus.STABLE;
-
     int itemCount = items != null
-        ? status == LoadingStatus.LOADING || status == LoadingStatus.RETRIEVING
+        ? status == LoadingStatus.RETRIEVING
             ? items!.length + 1
             : items!.length
         : 0;

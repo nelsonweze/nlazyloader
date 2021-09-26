@@ -53,7 +53,7 @@ class _FBStreamBuilderState<T> extends State<FBStreamBuilder<T>> {
                     items: items,
                     isSliver: widget.isSliver,
                     itemBuilder: widget.itemBuilder,
-                    isLoading: state.loadingStatus == LoadingStatus.RETRIEVING,
+                    status: state.loadingStatus,
                     onLoadMore: () => cubit.requestNextPage(widget.limit),
                     builder: widget.builder,
                   );
