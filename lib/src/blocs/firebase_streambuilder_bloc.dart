@@ -43,6 +43,10 @@ class FBStreamBuilderCubit extends Cubit<FBStreamBuilderState> {
     var isChange = false;
     var documents = state.documents.toList();
     documentChanges.forEach((docChange) {
+      print(docChange.type);
+      if (documents.isEmpty && docChange.type == DocumentChangeType.added) {
+        documents.add(docChange.doc);
+      }
       if (docChange.type == DocumentChangeType.removed) {
         documents.removeWhere((doc) {
           return docChange.doc.id == doc.id;
