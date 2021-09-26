@@ -51,8 +51,7 @@ class FBStreamBuilderCubit extends Cubit<FBStreamBuilderState> {
         isChange = true;
         documents.add(docChange.doc);
         emit(state.copyWith(hasReachedMax: false));
-      }
-      if (docChange.type == DocumentChangeType.removed) {
+      } else if (docChange.type == DocumentChangeType.removed) {
         documents.removeWhere((doc) {
           return docChange.doc.id == doc.id;
         });
@@ -87,10 +86,11 @@ class FBStreamBuilderCubit extends Cubit<FBStreamBuilderState> {
         if (documents.isEmpty) {
           querySnapshot = await state.query!.get();
         } else {
-          querySnapshot = await state.query!
-              .startAfterDocument(state.lastDocumentSnap!)
-              .limit(count)
-              .get();
+          var snap = state.query!;
+          if (state.lastDocumentSnap != null) {
+            snap = snap.startAfterDocument(state.lastDocumentSnap!);
+          }
+          querySnapshot = await snap.limit(count).get();
         }
 
         int oldSize = documents.length;

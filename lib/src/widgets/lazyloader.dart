@@ -4,40 +4,38 @@ import '../utils/util.dart';
 import 'bottom_loader.dart';
 
 class NLazyLoader<T> extends StatelessWidget {
-  final Widget Function(LazyItemBuilder<T>, int)? builder;
-  final Widget? child;
   final bool reverse;
-  final FutureCallBack? onLoadMore;
   final double scrollOffset;
-  final List<T>? items;
-  final LazyItemBuilder<T>? itemBuilder;
+  final List<T> items;
+  final LazyItemBuilder<T> itemBuilder;
   final bool isSliver;
   final LoadingStatus status;
-  NLazyLoader(
-      {this.child,
-      this.builder,
-      this.reverse = false,
-      this.isSliver = false,
-      this.status = LoadingStatus.STABLE,
-      this.onLoadMore,
-      this.scrollOffset = 80,
-      this.itemBuilder,
-      this.items});
+  final Widget Function(LazyItemBuilder<T>, int)? builder;
+  final FutureCallBack? onLoadMore;
+  final Widget? child;
+  NLazyLoader({
+    required this.itemBuilder,
+    required this.items,
+    this.reverse = false,
+    this.isSliver = false,
+    this.status = LoadingStatus.STABLE,
+    this.onLoadMore,
+    this.child,
+    this.builder,
+    this.scrollOffset = 80,
+  });
 
   Widget build(BuildContext context) {
-    int itemCount = items != null
-        ? status == LoadingStatus.RETRIEVING
-            ? items!.length + 1
-            : items!.length
-        : 0;
+    int itemCount =
+        status == LoadingStatus.RETRIEVING ? items.length + 1 : items.length;
 
     LazyItemBuilder<T?> _builder = (index, item) {
-      return index >= items!.length
+      return index >= items.length
           ? BottomLoader()
           : Column(
               children: [
-                itemBuilder!(index, items![index]),
-                if (reverse && index == 0 || index == items!.length - 1)
+                itemBuilder(index, items[index]),
+                if (reverse && index == 0 || index == items.length - 1)
                   SizedBox(
                     height: 50,
                   )
@@ -45,10 +43,10 @@ class NLazyLoader<T> extends StatelessWidget {
             );
     };
 
-    Widget? body() {
-      Widget? _child;
+    Widget body() {
+      Widget _child;
       if (child != null)
-        _child = child;
+        _child = child!;
       else if (isSliver)
         _child = SliverList(
           delegate: SliverChildBuilderDelegate(
@@ -71,7 +69,7 @@ class NLazyLoader<T> extends StatelessWidget {
 
     return NotificationListener(
       onNotification: (ScrollUpdateNotification info) {
-        if (!reverse && info.scrollDelta! > 0) {
+        if (!reverse && info.scrollDelta != null && info.scrollDelta! > 0) {
           if (info.metrics.maxScrollExtent > info.metrics.pixels &&
               info.metrics.maxScrollExtent - info.metrics.pixels <=
                   scrollOffset) {
@@ -83,7 +81,7 @@ class NLazyLoader<T> extends StatelessWidget {
         }
         return false;
       },
-      child: body()!,
+      child: body(),
     );
   }
 }
