@@ -46,10 +46,11 @@ class FBStreamBuilderCubit extends Cubit<FBStreamBuilderState> {
       List<DocumentChange<Map<String, dynamic>>> documentChanges) {
     var isChange = false;
     var documents = state.documents.toList();
+    var newDocs = <DocumentSnapshot<Map<String, dynamic>>>[];
     documentChanges.forEach((docChange) {
       if (docChange.type == DocumentChangeType.added) {
         isChange = true;
-        documents.add(docChange.doc);
+        newDocs.add(docChange.doc);
         emit(state.copyWith(hasReachedMax: false));
       } else if (docChange.type == DocumentChangeType.removed) {
         documents.removeWhere((doc) {
@@ -69,9 +70,13 @@ class FBStreamBuilderCubit extends Cubit<FBStreamBuilderState> {
       }
     });
     if (isChange) {
+      var map = Map<String, DocumentSnapshot<Map<String, dynamic>>>();
+      (newDocs + documents).forEach((element) {
+        map[element.id] = element;
+      });
       emit(state.copyWith(
-          documents: documents,
-          lastDocumentSnap: documents.last,
+          documents: map.values.toList(),
+          lastDocumentSnap: map.values.last,
           loadingStatus: LoadingStatus.STABLE));
     }
   }
