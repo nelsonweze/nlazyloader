@@ -47,6 +47,10 @@ class FBStreamBuilderCubit extends Cubit<FBStreamBuilderState> {
     var isChange = false;
     var documents = state.documents.toList();
     var newDocs = <DocumentSnapshot<Map<String, dynamic>>>[];
+    if (documentChanges.isEmpty) {
+      return emit(state.copyWith(
+          documents: documents, loadingStatus: LoadingStatus.STABLE));
+    }
     documentChanges.forEach((docChange) {
       if (docChange.type == DocumentChangeType.added) {
         isChange = true;
