@@ -15,6 +15,7 @@ class FBStreamBuilder<T> extends StatefulWidget {
   final Widget? empty;
   final Widget Function(Widget Function(int, T), int)? builder;
   final FBStreamBuilderCubit? cubit;
+  final Widget? errorWidget;
   const FBStreamBuilder(
       {Key? key,
       required this.query,
@@ -23,6 +24,7 @@ class FBStreamBuilder<T> extends StatefulWidget {
       this.builder,
       this.empty,
       this.cubit,
+      this.errorWidget,
       required this.itemBuilder,
       this.limit = 10})
       : super(key: key);
@@ -50,16 +52,18 @@ class _FBStreamBuilderState<T> extends State<FBStreamBuilder<T>> {
             state.documents.map((e) => widget.fromMap(e.data()!)).toList();
         return state.loadingStatus == LoadingStatus.LOADING
             ? wrapSliver(BottomLoader(), widget.isSliver)
-            : items.isEmpty
-                ? wrapSliver(widget.empty ?? SizedBox(), widget.isSliver)
-                : NLazyLoader<T>(
-                    items: items,
-                    isSliver: widget.isSliver,
-                    itemBuilder: widget.itemBuilder,
-                    status: state.loadingStatus,
-                    onLoadMore: () => cubit.requestNextPage(widget.limit),
-                    builder: widget.builder,
-                  );
+            : state.error.isNotEmpty
+                ? (widget.errorWidget ?? SizedBox())
+                : items.isEmpty
+                    ? wrapSliver(widget.empty ?? SizedBox(), widget.isSliver)
+                    : NLazyLoader<T>(
+                        items: items,
+                        isSliver: widget.isSliver,
+                        itemBuilder: widget.itemBuilder,
+                        status: state.loadingStatus,
+                        onLoadMore: () => cubit.requestNextPage(widget.limit),
+                        builder: widget.builder,
+                      );
       },
     );
   }

@@ -9,11 +9,13 @@ class FBStreamBuilderState {
   DocumentSnapshot? lastDocumentSnap;
   Query<Map<String, dynamic>>? query;
   bool hasReachedMax;
+  String error;
   FBStreamBuilderState(
       {this.documents = const [],
       this.loadingStatus = LoadingStatus.STABLE,
       this.lastDocumentSnap,
       this.hasReachedMax = false,
+      this.error = '',
       this.query});
 
   FBStreamBuilderState copyWith(
@@ -21,12 +23,14 @@ class FBStreamBuilderState {
       LoadingStatus? loadingStatus,
       DocumentSnapshot? lastDocumentSnap,
       Query<Map<String, dynamic>>? query,
+      String? error,
       bool? hasReachedMax}) {
     return FBStreamBuilderState(
         documents: documents ?? this.documents,
         lastDocumentSnap: lastDocumentSnap ?? this.lastDocumentSnap,
         loadingStatus: loadingStatus ?? this.loadingStatus,
         query: query ?? this.query,
+        error: error ?? this.error,
         hasReachedMax: hasReachedMax ?? this.hasReachedMax);
   }
 }
@@ -39,6 +43,9 @@ class FBStreamBuilderCubit extends Cubit<FBStreamBuilderState> {
     emit(state.copyWith(query: query, loadingStatus: LoadingStatus.LOADING));
     sub = query.snapshots().listen((event) {
       onChangeData(event.docChanges);
+    }, onError: (err) {
+      print(err);
+      emit(state.copyWith(loadingStatus: LoadingStatus.STABLE, error: err));
     });
   }
 
