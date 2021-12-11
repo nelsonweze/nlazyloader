@@ -10,7 +10,7 @@ class CustomListBuilder<T> extends StatefulWidget {
   final Widget Function(int, T) itemBuilder;
   final bool isSliver;
   final Widget? empty;
-  final Widget Function(Widget Function(int, T), int)? builder;
+  final Widget Function(LazyBuilder<T>, int)? builder;
   const CustomListBuilder(
       {Key? key,
       this.future,

@@ -10,7 +10,7 @@ class NLazyLoader<T> extends StatelessWidget {
   final LazyItemBuilder<T> itemBuilder;
   final bool isSliver;
   final LoadingStatus status;
-  final Widget Function(LazyItemBuilder<T>, int)? builder;
+  final Widget Function(LazyBuilder<T>, int)? builder;
   final FutureCallBack? onLoadMore;
   final Widget? child;
   NLazyLoader({
@@ -29,7 +29,7 @@ class NLazyLoader<T> extends StatelessWidget {
     int itemCount =
         status == LoadingStatus.RETRIEVING ? items.length + 1 : items.length;
 
-    LazyItemBuilder<T?> _builder = (index, item) {
+    LazyBuilder<T?> _builder = (index) {
       return index >= items.length
           ? BottomLoader()
           : Column(
@@ -50,7 +50,7 @@ class NLazyLoader<T> extends StatelessWidget {
       else if (isSliver)
         _child = SliverList(
           delegate: SliverChildBuilderDelegate(
-              (BuildContext context, int index) => _builder(index, null),
+              (BuildContext context, int index) => _builder(index),
               addAutomaticKeepAlives: true,
               childCount: itemCount),
         );
@@ -61,7 +61,7 @@ class NLazyLoader<T> extends StatelessWidget {
           physics: ClampingScrollPhysics(),
           reverse: reverse,
           itemCount: itemCount,
-          itemBuilder: (context, index) => _builder(index, null),
+          itemBuilder: (context, index) => _builder(index),
           shrinkWrap: true,
         );
       return _child;

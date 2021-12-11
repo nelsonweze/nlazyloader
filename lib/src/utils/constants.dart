@@ -4,7 +4,10 @@ enum LoadingStatus { LOADING, STABLE, RETRIEVING }
 
 typedef Future<bool> FutureCallBack();
 
-typedef Widget LazyItemBuilder<T>(
+typedef Widget LazyBuilder<T>(
   int index,
-  T child,
+);
+
+typedef Widget LazyItemBuilder<T>(
+  int index, T child
 );

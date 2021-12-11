@@ -13,7 +13,7 @@ class FBStreamBuilder<T> extends StatefulWidget {
   final int limit;
   final Widget Function(int, T) itemBuilder;
   final Widget? empty;
-  final Widget Function(Widget Function(int, T), int)? builder;
+  final Widget Function(LazyBuilder<T>, int)? builder;
   final FBStreamBuilderCubit? cubit;
   final Widget? errorWidget;
   const FBStreamBuilder(
